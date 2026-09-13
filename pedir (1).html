@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zeste · Haz tu pedido</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            crema:   "#FCF6EA",
+            panel:   "#FFFFFF",
+            ambar:   "#E8146E",
+            ambarSuave: "#FBE1EC",
+            cafe:    "#3A2B4A",
+            cafeClaro: "#8C7C97",
+            pizarra: "#2B2140",
+            borde:   "#F0E3D3",
+            magenta:   "#E8146E",
+            mandarina: "#E8823A",
+            sol:       "#F6C445",
+            coral:     "#F4A0AE",
+            menta:     "#57C99A",
+            lila:      "#B98FDA",
+          },
+          fontFamily: {
+            wordmark: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+            display: ['Fraunces', 'Georgia', 'serif'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          boxShadow: {
+            suave: '0 1px 2px rgba(43,33,64,.04), 0 8px 24px -12px rgba(232,20,110,.18)',
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    h1, h2, h3, .font-display { font-family: 'Fraunces', Georgia, serif; }
+    .zeste-wordmark { font-family: 'The Seasons', 'Cormorant Garamond', Georgia, serif; font-weight: 700; letter-spacing: .01em; color: #E8146E; line-height: 1; }
+    .zeste-tagline { font-family: 'The Seasons', 'Cormorant Garamond', Georgia, serif; }
+    .zeste-wave { height: 6px; background: linear-gradient(90deg,#E8146E 0 16%,#F4A0AE 16% 32%,#E8823A 32% 48%,#F6C445 48% 64%,#57C99A 64% 80%,#B98FDA 80% 100%); }
+    ::-webkit-scrollbar { height: 10px; width: 10px; }
+    ::-webkit-scrollbar-thumb { background: #F3B9D4; border-radius: 999px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .sheet-in { animation: slideUp .28s cubic-bezier(.2,.8,.2,1) both; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .fade-in { animation: fadeIn .2s ease both; }
+    @media (prefers-reduced-motion: reduce) { .sheet-in, .fade-in { animation: none; } }
+    :focus-visible { outline: 2px solid #E8146E; outline-offset: 2px; }
+  </style>
+</head>
+
+<body class="bg-crema text-pizarra min-h-screen pb-24">
+
+  <!-- =========================================================
+       ENCABEZADO
+  ========================================================== -->
+  <header class="bg-panel/90 backdrop-blur sticky top-0 z-30 border-b border-borde">
+    <div class="zeste-wave"></div>
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="shrink-0">
+          <path d="M16 7 A 17 17 0 0 1 16 41 Z" fill="#FDEBDD"/>
+          <path d="M16 7 A 17 17 0 0 1 16 41" fill="none" stroke="#EE9A5F" stroke-width="1.8" stroke-linecap="round"/>
+          <line x1="16" y1="7" x2="16" y2="41" stroke="#EE9A5F" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M16 11 A 13 13 0 0 1 16 37" fill="none" stroke="#EE9A5F" stroke-width="1"/>
+          <g stroke="#EE9A5F" stroke-width="0.9" stroke-linecap="round">
+            <path d="M16 24 L20 11.6"/><path d="M16 24 L26.5 16.4"/><path d="M16 24 L29 24"/>
+            <path d="M16 24 L26.5 31.6"/><path d="M16 24 L20 36.4"/>
+          </g>
+        </svg>
+        <div class="leading-none">
+          <span class="zeste-wordmark text-2xl sm:text-3xl">Zeste</span>
+          <p class="zeste-tagline text-[11px] tracking-[0.1em] uppercase text-cafeClaro mt-0.5">Pastelería <span class="text-lila">•</span> Color y Sabor</p>
+        </div>
+      </div>
+      <button id="btnAbrirCarrito" class="relative inline-flex items-center gap-2 bg-cafe text-white text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-pizarra transition-colors">
+        <i class="fa-solid fa-bag-shopping"></i>
+        <span class="hidden sm:inline">Carrito</span>
+        <span id="cartBadge" class="hidden absolute -top-1.5 -right-1.5 h-5 min-w-[20px] px-1 rounded-full bg-ambar text-white text-[11px] font-bold flex items-center justify-center">0</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- =========================================================
+       HERO
+  ========================================================== -->
+  <section class="max-w-3xl mx-auto px-4 sm:px-6 pt-10 pb-6 text-center">
+    <h1 class="font-display text-3xl sm:text-4xl text-cafe leading-tight">Arma tu pedido</h1>
+    <p class="text-cafeClaro mt-3 max-w-md mx-auto">Elige tus productos favoritos, arma el carrito y envíanos tu pedido directo por WhatsApp. Te confirmamos ahí mismo fecha y forma de pago.</p>
+  </section>
+
+  <!-- Navegación de categorías -->
+  <nav class="max-w-3xl mx-auto px-4 sm:px-6 sticky top-[65px] z-20 -mt-1">
+    <div id="catNav" class="flex gap-2 overflow-x-auto pb-3 pt-1 no-scrollbar"></div>
+  </nav>
+
+  <!-- =========================================================
+       CATÁLOGO
+  ========================================================== -->
+  <main id="catalogo" class="max-w-3xl mx-auto px-4 sm:px-6 space-y-10 pb-6"></main>
+
+  <!-- =========================================================
+       BARRA INFERIOR DE CARRITO (móvil)
+  ========================================================== -->
+  <button id="barraCarrito" class="hidden fixed bottom-0 left-0 right-0 z-30 bg-cafe text-white px-5 py-4 flex items-center justify-between shadow-suave">
+    <span class="text-sm"><span id="barraCantidad">0</span> producto(s)</span>
+    <span class="font-display text-lg">Ver carrito · <span id="barraTotal">$0</span></span>
+  </button>
+
+  <!-- =========================================================
+       MODAL · CONFIGURAR PRODUCTO
+  ========================================================== -->
+  <div id="modalProducto" class="fixed inset-0 z-40 hidden">
+    <div id="modalProductoFondo" class="absolute inset-0 bg-pizarra/40 backdrop-blur-sm fade-in"></div>
+    <div class="absolute inset-x-0 bottom-0 sm:inset-0 sm:flex sm:items-center sm:justify-center p-0 sm:p-4">
+      <div class="bg-panel w-full sm:max-w-md sm:rounded-3xl rounded-t-3xl shadow-2xl sheet-in max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between px-5 py-4 border-b border-borde sticky top-0 bg-panel">
+          <h2 id="mpNombre" class="font-display text-lg text-cafe">Producto</h2>
+          <button id="mpCerrar" class="h-9 w-9 rounded-full hover:bg-crema flex items-center justify-center text-cafeClaro">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+        <div class="px-5 py-5 space-y-4">
+          <p id="mpDescripcion" class="text-sm text-cafeClaro -mt-2"></p>
+
+          <div id="mpCampoTamano">
+            <label id="mpLabelTamano" class="block text-xs font-medium text-cafeClaro mb-1.5">Tamaño</label>
+            <select id="mpTamano" class="w-full px-3 py-2.5 rounded-xl border border-borde bg-crema/40 text-sm focus:outline-none focus:ring-2 focus:ring-ambar/40 focus:border-ambar"></select>
+          </div>
+
+          <div id="mpCampoCantidadSel">
+            <label class="block text-xs font-medium text-cafeClaro mb-1.5">Cantidad</label>
+            <select id="mpCantidadSel" class="w-full px-3 py-2.5 rounded-xl border border-borde bg-crema/40 text-sm focus:outline-none focus:ring-2 focus:ring-ambar/40 focus:border-ambar">
+              <option value="12">12 unidades</option>
+              <option value="24">24 unidades</option>
+              <option value="36">36 unidades</option>
+              <option value="50">50 unidades</option>
+            </select>
+          </div>
+
+          <div id="mpCampoPacks">
+            <label class="block text-xs font-medium text-cafeClaro mb-1.5">N° de packs</label>
+            <div class="flex items-center gap-3">
+              <button id="mpPacksMenos" type="button" class="h-9 w-9 rounded-lg border border-borde hover:bg-crema text-cafe">−</button>
+              <input id="mpPacks" type="number" min="1" value="1" class="w-16 text-center px-2 py-2 rounded-xl border border-borde bg-crema/40 text-sm" />
+              <button id="mpPacksMas" type="button" class="h-9 w-9 rounded-lg border border-borde hover:bg-crema text-cafe">+</button>
+            </div>
+          </div>
+
+          <div id="mpCampoCantidadLibre">
+            <label id="mpLabelLibre" class="block text-xs font-medium text-cafeClaro mb-1.5">Cantidad</label>
+            <div class="flex items-center gap-3">
+              <button id="mpLibreMenos" type="button" class="h-9 w-9 rounded-lg border border-borde hover:bg-crema text-cafe">−</button>
+              <input id="mpCantidadLibre" type="number" min="1" value="1" class="w-16 text-center px-2 py-2 rounded-xl border border-borde bg-crema/40 text-sm" />
+              <button id="mpLibreMas" type="button" class="h-9 w-9 rounded-lg border border-borde hover:bg-crema text-cafe">+</button>
+            </div>
+          </div>
+
+          <div class="bg-ambarSuave/40 rounded-xl px-4 py-3 flex items-center justify-between">
+            <span class="text-xs text-cafe">Subtotal</span>
+            <span id="mpPrecio" class="text-xl font-display font-semibold text-cafe">$0</span>
+          </div>
+
+          <button id="mpAgregar" class="w-full bg-ambar hover:bg-cafe text-white font-medium py-3 rounded-xl transition-colors flex items-center justify-center gap-2">
+            <i class="fa-solid fa-cart-plus"></i> Agregar al carrito
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       PANEL · CARRITO
+  ========================================================== -->
+  <div id="panelCarrito" class="fixed inset-0 z-40 hidden">
+    <div id="panelCarritoFondo" class="absolute inset-0 bg-pizarra/40 backdrop-blur-sm fade-in"></div>
+    <div class="absolute inset-x-0 bottom-0 sm:inset-y-0 sm:right-0 sm:left-auto sm:w-[420px]">
+      <div class="bg-panel w-full h-[85vh] sm:h-full rounded-t-3xl sm:rounded-none shadow-2xl sheet-in flex flex-col">
+        <div class="flex items-center justify-between px-5 py-4 border-b border-borde">
+          <h2 class="font-display text-lg text-cafe">Tu carrito</h2>
+          <button id="cartCerrar" class="h-9 w-9 rounded-full hover:bg-crema flex items-center justify-center text-cafeClaro">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+
+        <!-- Vista: lista de productos -->
+        <div id="vistaCarrito" class="flex-1 overflow-y-auto px-5 py-4">
+          <div id="listaCarrito" class="space-y-3"></div>
+          <div id="carritoVacio" class="hidden text-center py-16">
+            <div class="mx-auto h-12 w-12 rounded-2xl bg-ambar/10 text-ambar flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-bag-shopping"></i></div>
+            <p class="font-display text-cafe">Tu carrito está vacío</p>
+            <p class="text-sm text-cafeClaro mt-1">Elige productos de la carta para empezar.</p>
+          </div>
+        </div>
+        <div id="footerCarrito" class="border-t border-borde px-5 py-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-sm text-cafeClaro">Total</span>
+            <span id="cartTotal" class="text-2xl font-display font-semibold text-cafe">$0</span>
+          </div>
+          <button id="btnIrCheckout" class="w-full bg-ambar hover:bg-cafe text-white font-medium py-3 rounded-xl transition-colors">Continuar</button>
+        </div>
+
+        <!-- Vista: checkout -->
+        <div id="vistaCheckout" class="hidden flex-1 overflow-y-auto px-5 py-4 space-y-4">
+          <button id="btnVolverCarrito" class="text-sm text-cafeClaro hover:text-cafe flex items-center gap-1.5"><i class="fa-solid fa-arrow-left"></i> Volver al carrito</button>
+          <div>
+            <label class="block text-xs font-medium text-cafeClaro mb-1">Nombre completo *</label>
+            <input id="ckNombre" type="text" placeholder="Tu nombre" class="w-full px-3 py-2.5 rounded-xl border border-borde bg-crema/40 text-sm focus:outline-none focus:ring-2 focus:ring-ambar/40 focus:border-ambar" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-cafeClaro mb-1">Teléfono / WhatsApp *</label>
+            <input id="ckTelefono" type="tel" placeholder="+56 9 1234 5678" class="w-full px-3 py-2.5 rounded-xl border border-borde bg-crema/40 text-sm focus:outline-none focus:ring-2 focus:ring-ambar/40 focus:border-ambar" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-cafeClaro mb-1">Fecha de entrega deseada *</label>
+            <input id="ckFecha" type="date" class="w-full px-3 py-2.5 rounded-xl border border-borde bg-crema/40 text-sm focus:outline-none focus:ring-2 focus:ring-ambar/40 focus:border-ambar" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-cafeClaro mb-2">Forma de entrega *</label>
+            <div class="space-y-2">
+              <label class="flex items-center gap-2.5 border border-borde rounded-xl px-3 py-2.5 cursor-pointer has-[:checked]:border-ambar has-[:checked]:bg-ambarSuave/30">
+                <input type="radio" name="ckEntrega" value="retiro" checked class="accent-ambar" />
+                <span class="text-sm text-pizarra">Retiro en domicilio</span>
+              </label>
+              <label class="flex items-center gap-2.5 border border-borde rounded-xl px-3 py-2.5 cursor-pointer has-[:checked]:border-ambar has-[:checked]:bg-ambarSuave/30">
+                <input type="radio" name="ckEntrega" value="encuentro" class="accent-ambar" />
+                <span class="text-sm text-pizarra">Punto de encuentro</span>
+              </label>
+              <label class="flex items-center gap-2.5 border border-borde rounded-xl px-3 py-2.5 cursor-pointer has-[:checked]:border-ambar has-[:checked]:bg-ambarSuave/30">
+                <input type="radio" name="ckEntrega" value="envio" class="accent-ambar" />
+                <span class="text-sm text-pizarra">Envío <span class="text-cafeClaro">(costo adicional)</span></span>
+              </label>
+            </div>
+          </div>
+          <div id="ckCampoEncuentro" class="hidden">
+            <label class="block text-xs font-medium text-cafeClaro mb-1">¿Dónde nos encontramos? *</label>
+            <input id="ckLugarEncuentro" type="text" placeholder="Ej: Metro San Miguel" class="w-full px-3 py-2.5 rounded-xl border border-borde bg-crema/40 text-sm focus:outline-none focus:ring-2 focus:ring-ambar/40 focus:border-ambar" />
+          </div>
+          <div id="ckCampoEnvio" class="hidden">
+            <label class="block text-xs font-medium text-cafeClaro mb-1">Dirección de envío *</label>
+            <input id="ckDireccionEnvio" type="text" placeholder="Calle, número, comuna" class="w-full px-3 py-2.5 rounded-xl border border-borde bg-crema/40 text-sm focus:outline-none focus:ring-2 focus:ring-ambar/40 focus:border-ambar" />
+            <p class="text-[11px] text-cafeClaro mt-1">El costo de envío se confirma por WhatsApp según la distancia.</p>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-cafeClaro mb-1">Notas (opcional)</label>
+            <textarea id="ckNotas" rows="2" placeholder="Ej: sin decoración especial…" class="w-full px-3 py-2.5 rounded-xl border border-borde bg-crema/40 text-sm focus:outline-none focus:ring-2 focus:ring-ambar/40 focus:border-ambar resize-none"></textarea>
+          </div>
+          <div class="bg-ambarSuave/40 rounded-xl px-4 py-3 flex items-center justify-between">
+            <span class="text-xs text-cafe">Total del pedido</span>
+            <span id="ckTotal" class="text-xl font-display font-semibold text-cafe">$0</span>
+          </div>
+          <p class="text-[11px] text-cafeClaro">Al enviar, se abrirá WhatsApp con el detalle de tu pedido. Nosotros te confirmaremos ahí la fecha exacta y los datos de pago.</p>
+          <button id="btnEnviarWa" class="w-full bg-menta hover:opacity-90 text-white font-medium py-3 rounded-xl transition-colors flex items-center justify-center gap-2">
+            <i class="fa-brands fa-whatsapp text-lg"></i> Enviar pedido por WhatsApp
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 hidden">
+    <div class="bg-cafe text-white text-sm px-4 py-2.5 rounded-xl shadow-lg flex items-center gap-2">
+      <i id="toastIcon" class="fa-solid fa-circle-check"></i>
+      <span id="toastMsg"></span>
+    </div>
+  </div>
+
+  <footer class="max-w-3xl mx-auto px-4 sm:px-6 py-8 text-center text-xs text-cafeClaro">
+    Zeste · Pastelería · Color y Sabor
+  </footer>
+
+  <script>
+  (function () {
+    "use strict";
+
+    /* =========================================================
+       CONFIGURACIÓN — completa esto antes de publicar
+    ========================================================== */
+    // Número de WhatsApp del NEGOCIO que recibe los pedidos (formato internacional, sin +, sin espacios).
+    // ⚠️ IMPORTANTE: reemplaza por el número real de Zeste antes de publicar.
+    const WHATSAPP_NEGOCIO = "56956922223";
+
+    /* =========================================================
+       CATÁLOGO — mismo tarifario del panel de gestión.
+       Si editas precios en la pestaña "Precios" del panel, actualiza
+       estos valores también para que la carta del cliente quede igual.
+    ========================================================== */
+    const DIM_TORTA_CLASICA = [
+      { id: "r16", etiqueta: "16 cm · 10 porciones", precio: 23000 },
+      { id: "r19", etiqueta: "19 cm · 15 porciones", precio: 31000 },
+      { id: "r22", etiqueta: "22 cm · 20 porciones", precio: 38000 },
+      { id: "r25", etiqueta: "25 cm · 25 porciones", precio: 43000 },
+      { id: "r30", etiqueta: "30 cm · 30 porciones", precio: 48000 },
+    ];
+    const DIM_TORTA_ESPECIAL = [
+      { id: "r16", etiqueta: "16 cm · 10 porciones", precio: 26000 },
+      { id: "r19", etiqueta: "19 cm · 15 porciones", precio: 34000 },
+      { id: "r22", etiqueta: "22 cm · 20 porciones", precio: 41000 },
+      { id: "r25", etiqueta: "25 cm · 25 porciones", precio: 46000 },
+      { id: "r30", etiqueta: "30 cm · 30 porciones", precio: 51000 },
+    ];
+    function torta(nombre, descripcion, dims) {
+      return { nombre, descripcion, grupo: "Tortas", tipo: "torta", unidad: "torta", dimensiones: dims, tamanos: {} };
+    }
+
+    const TARIFARIO = {
+      duo: { nombre: "Dúo Suave", descripcion: "Empolvados + Maicenas", grupo: "Combos",
+        tamanos: {
+          mini:    { nombre: "Mini (4 cm)",      precios: { 12: 9000,  24: 16000, 36: 22000, 50: 29500 } },
+          mediano: { nombre: "Mediano (5–6 cm)", precios: { 12: 13700, 24: 26000, 36: 37500, 50: 52000 } },
+        } },
+      duo_crujiente: { nombre: "Dúo Crujiente", descripcion: "Maicenas + Chilenitos", grupo: "Combos",
+        tamanos: {
+          mini:    { nombre: "Mini (4 cm)",      precios: { 12: 9000,  24: 16000, 36: 22000, 50: 29500 } },
+          mediano: { nombre: "Mediano (5–6 cm)", precios: { 12: 12500, 24: 24000, 36: 35000, 50: 45500 } },
+        } },
+      trio: { nombre: "Trío Tradicional", descripcion: "Chilenitos + Empolvados + Maicenas", grupo: "Combos",
+        tamanos: {
+          mini:    { nombre: "Mini (4 cm)",      precios: { 12: 10000, 24: 17000, 36: 24000, 50: 30000 } },
+          mediano: { nombre: "Mediano (5–6 cm)", precios: { 12: 14000, 24: 27000, 36: 40000, 50: 53000 } },
+        } },
+      maicenas: { nombre: "Maicenas", descripcion: "Pack individual", grupo: "Pack Individual",
+        tamanos: {
+          mini:    { nombre: "Mini (4 cm)",      precios: { 12: 9000,  24: 16000, 36: 22000, 50: 29000 } },
+          mediano: { nombre: "Mediano (5–6 cm)", precios: { 12: 13700, 24: 27000, 36: 40000, 50: 55000 } },
+        } },
+      chilenitos: { nombre: "Chilenitos", descripcion: "Pack individual", grupo: "Pack Individual",
+        tamanos: {
+          mini:    { nombre: "Mini (4 cm)",      precios: { 12: 9000,  24: 16000, 36: 22000, 50: 29000 } },
+          mediano: { nombre: "Mediano (5–6 cm)", precios: { 12: 12000, 24: 21500, 36: 30000, 50: 40000 } },
+        } },
+      empolvados: { nombre: "Empolvados", descripcion: "Pack individual", grupo: "Pack Individual",
+        tamanos: {
+          mini:    { nombre: "Mini (4 cm)",      precios: { 12: 9000,  24: 16000, 36: 22000, 50: 29000 } },
+          mediano: { nombre: "Mediano (5–6 cm)", precios: { 12: 13700, 24: 27000, 36: 40500, 50: 56000 } },
+        } },
+      caja_escolar: {
+        nombre: "Caja Escolar", descripcion: "2 empolvados + 2 chilenitos + 2 maicenas mini, por caja", grupo: "Otros",
+        precioUnitario: 3500, unidad: "caja", tamanos: {},
+      },
+      tres_leches:    torta("Torta Tres Leches", "Bizcocho vainilla con remojo tres leches", DIM_TORTA_CLASICA),
+      galletas:       torta("Torta Galleta", "Galletas de vainilla, almíbar de café y manjar", DIM_TORTA_CLASICA),
+      selva_negra:    torta("Torta Selva Negra", "Bizcocho de chocolate con crema chantilly", DIM_TORTA_CLASICA),
+      alfajor:        torta("Torta Alfajor", "Hojarasca con manjar y crema pastelera", DIM_TORTA_CLASICA),
+      amor:           torta("Torta Amor Hojarasca", "Hojarasca, mermelada de frambuesa y manjar", DIM_TORTA_ESPECIAL),
+      puro_chocolate: torta("Torta Puro Chocolate", "Bizcocho de chocolate, crema de chocolate y ron", DIM_TORTA_ESPECIAL),
+      amor_frambuesa: torta("Torta Amor Bizcocho Frambuesa", "Bizcocho con crema de frambuesa y manjar", DIM_TORTA_ESPECIAL),
+      carrot_cake:    torta("Torta Carrot Cake", "Bizcocho de zanahoria y nuez, frosting de queso", DIM_TORTA_ESPECIAL),
+    };
+
+    // Orden y color de cada categoría (da identidad visual consistente por grupo)
+    const CATEGORIAS = [
+      { nombre: "Combos",           color: "magenta",   icon: "fa-layer-group" },
+      { nombre: "Pack Individual",  color: "mandarina", icon: "fa-cookie" },
+      { nombre: "Tortas Clásicas",  color: "lila",       icon: "fa-cake-candles" },
+      { nombre: "Tortas Especiales",color: "coral",      icon: "fa-star" },
+      { nombre: "Otros",           color: "menta",      icon: "fa-box" },
+    ];
+    // Mapea el grupo real del producto a la categoría visual (separa tortas en dos)
+    function categoriaDe(key, prod) {
+      if (prod.tipo === "torta") {
+        return ["amor", "puro_chocolate", "amor_frambuesa", "carrot_cake"].includes(key) ? "Tortas Especiales" : "Tortas Clásicas";
+      }
+      return prod.grupo;
+    }
+
+    const COLOR_HEX = { magenta: "#E8146E", mandarina: "#E8823A", lila: "#B98FDA", coral: "#F4A0AE", menta: "#57C99A" };
+
+    /* =========================================================
+       ESTADO
+    ========================================================== */
+    const $ = (id) => document.getElementById(id);
+    let carrito = [];
+    const CLAVE_CARRITO = "zeste_carrito_cliente";
+
+    function cargarCarrito() {
+      try { carrito = JSON.parse(localStorage.getItem(CLAVE_CARRITO)) || []; } catch (e) { carrito = []; }
+    }
+    function guardarCarrito() { localStorage.setItem(CLAVE_CARRITO, JSON.stringify(carrito)); }
+
+    const clp = new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 });
+    function formatCLP(v) { return clp.format(v || 0); }
+    function escapeHtml(s) { return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+    function toast(msg, tipo) {
+      const el = $("toast"); $("toastIcon").className = "fa-solid " + (tipo === "warn" ? "fa-triangle-exclamation" : "fa-circle-check");
+      $("toastMsg").textContent = msg; el.classList.remove("hidden");
+      clearTimeout(toast._t); toast._t = setTimeout(() => el.classList.add("hidden"), 2400);
+    }
+
+    /* =========================================================
+       RENDER · NAV DE CATEGORÍAS Y CATÁLOGO
+    ========================================================== */
+    function renderNav() {
+      $("catNav").innerHTML = CATEGORIAS.map((c) => `
+        <a href="#cat-${slug(c.nombre)}" class="shrink-0 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border text-sm font-medium transition-colors"
+           style="border-color:${COLOR_HEX[c.color]}55; color:${COLOR_HEX[c.color]}; background:${COLOR_HEX[c.color]}14;">
+          <i class="fa-solid ${c.icon}"></i> ${c.nombre}
+        </a>`).join("");
+    }
+    function slug(s) { return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g,"-"); }
+
+    function precioDesde(prod) {
+      if (prod.tipo === "torta") return prod.dimensiones[0].precio;
+      if (prod.precioUnitario) return prod.precioUnitario;
+      return prod.tamanos.mini.precios[12];
+    }
+
+    function renderCatalogo() {
+      const porCategoria = {};
+      CATEGORIAS.forEach((c) => (porCategoria[c.nombre] = []));
+      Object.entries(TARIFARIO).forEach(([key, prod]) => {
+        const cat = categoriaDe(key, prod);
+        if (porCategoria[cat]) porCategoria[cat].push({ key, prod });
+      });
+
+      $("catalogo").innerHTML = CATEGORIAS.map((c) => {
+        const items = porCategoria[c.nombre];
+        if (!items.length) return "";
+        const color = COLOR_HEX[c.color];
+        return `
+        <section id="cat-${slug(c.nombre)}" class="scroll-mt-32">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="h-8 w-8 rounded-lg flex items-center justify-center text-white" style="background:${color}"><i class="fa-solid ${c.icon} text-sm"></i></span>
+            <h2 class="font-display text-xl text-cafe">${c.nombre}</h2>
+          </div>
+          <div class="grid sm:grid-cols-2 gap-3">
+            ${items.map(({ key, prod }) => `
+              <button data-prod="${key}" class="tarjeta-prod text-left bg-panel border border-borde rounded-2xl p-4 hover:shadow-suave hover:border-transparent transition-all">
+                <div class="flex items-start justify-between gap-2">
+                  <div class="min-w-0">
+                    <p class="font-display text-base text-cafe truncate">${escapeHtml(prod.nombre)}</p>
+                    <p class="text-xs text-cafeClaro mt-0.5 line-clamp-2">${escapeHtml(prod.descripcion)}</p>
+                  </div>
+                  <span class="shrink-0 h-9 w-9 rounded-full flex items-center justify-center text-white text-sm" style="background:${color}"><i class="fa-solid fa-plus"></i></span>
+                </div>
+                <p class="text-sm font-semibold mt-3" style="color:${color}">Desde ${formatCLP(precioDesde(prod))}</p>
+              </button>`).join("")}
+          </div>
+        </section>`;
+      }).join("");
+
+      document.querySelectorAll(".tarjeta-prod").forEach((b) =>
+        b.addEventListener("click", () => abrirModalProducto(b.dataset.prod))
+      );
+    }
+
+    /* =========================================================
+       MODAL · CONFIGURAR PRODUCTO
+    ========================================================== */
+    let prodActualKey = null;
+
+    function modoDe(prod) {
+      if (prod.tipo === "torta") return "torta";
+      if (prod.precioUnitario) return "unitario";
+      return "matriz";
+    }
+
+    function abrirModalProducto(key) {
+      prodActualKey = key;
+      const prod = TARIFARIO[key];
+      const modo = modoDe(prod);
+
+      $("mpNombre").textContent = prod.nombre;
+      $("mpDescripcion").textContent = prod.descripcion;
+
+      // Tamaño / dimensión
+      const usaTamano = modo === "matriz" || modo === "torta";
+      $("mpCampoTamano").classList.toggle("hidden", !usaTamano);
+      $("mpLabelTamano").textContent = modo === "torta" ? "Dimensión" : "Tamaño";
+      if (modo === "torta") {
+        $("mpTamano").innerHTML = prod.dimensiones.map((d) => `<option value="${d.id}">${d.etiqueta}</option>`).join("");
+      } else if (modo === "matriz") {
+        $("mpTamano").innerHTML = `<option value="mini">${prod.tamanos.mini.nombre}</option><option value="mediano">${prod.tamanos.mediano.nombre}</option>`;
+      }
+
+      // Cantidad fija (matriz) vs packs vs cantidad libre (unitario/torta)
+      $("mpCampoCantidadSel").classList.toggle("hidden", modo !== "matriz");
+      $("mpCampoPacks").classList.toggle("hidden", modo !== "matriz");
+      $("mpCampoCantidadLibre").classList.toggle("hidden", modo === "matriz");
+      $("mpLabelLibre").textContent = modo === "torta" ? "N° de tortas" : "N° de cajas";
+      $("mpCantidadSel").value = "12";
+      $("mpPacks").value = "1";
+      $("mpCantidadLibre").value = "1";
+
+      actualizarPrecioModal();
+      $("modalProducto").classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+    }
+
+    function cerrarModalProducto() {
+      $("modalProducto").classList.add("hidden");
+      document.body.style.overflow = "";
+    }
+    $("mpCerrar").addEventListener("click", cerrarModalProducto);
+    $("modalProductoFondo").addEventListener("click", cerrarModalProducto);
+
+    function precioModalActual() {
+      const prod = TARIFARIO[prodActualKey];
+      const modo = modoDe(prod);
+      if (modo === "torta") {
+        const d = prod.dimensiones.find((x) => x.id === $("mpTamano").value);
+        return (d ? d.precio : 0) * (Number($("mpCantidadLibre").value) || 0);
+      }
+      if (modo === "unitario") return prod.precioUnitario * (Number($("mpCantidadLibre").value) || 0);
+      const t = $("mpTamano").value, q = $("mpCantidadSel").value;
+      const base = prod.tamanos[t].precios[q] || 0;
+      return base * (Number($("mpPacks").value) || 1);
+    }
+    function actualizarPrecioModal() { $("mpPrecio").textContent = formatCLP(precioModalActual()); }
+
+    [$("mpTamano"), $("mpCantidadSel"), $("mpPacks"), $("mpCantidadLibre")].forEach((el) =>
+      el.addEventListener("input", actualizarPrecioModal)
+    );
+    $("mpPacksMas").addEventListener("click", () => { $("mpPacks").value = (Number($("mpPacks").value) || 1) + 1; actualizarPrecioModal(); });
+    $("mpPacksMenos").addEventListener("click", () => { $("mpPacks").value = Math.max(1, (Number($("mpPacks").value) || 1) - 1); actualizarPrecioModal(); });
+    $("mpLibreMas").addEventListener("click", () => { $("mpCantidadLibre").value = (Number($("mpCantidadLibre").value) || 1) + 1; actualizarPrecioModal(); });
+    $("mpLibreMenos").addEventListener("click", () => { $("mpCantidadLibre").value = Math.max(1, (Number($("mpCantidadLibre").value) || 1) - 1); actualizarPrecioModal(); });
+
+    $("mpAgregar").addEventListener("click", () => {
+      const prod = TARIFARIO[prodActualKey];
+      const modo = modoDe(prod);
+      const precio = precioModalActual();
+      if (precio <= 0) { toast("Elige una opción válida.", "warn"); return; }
+
+      let etiquetaTam = "", cantidadTxt = "";
+      if (modo === "torta") {
+        const d = prod.dimensiones.find((x) => x.id === $("mpTamano").value);
+        etiquetaTam = d ? d.etiqueta : "";
+        cantidadTxt = `${$("mpCantidadLibre").value} torta(s)`;
+      } else if (modo === "unitario") {
+        cantidadTxt = `${$("mpCantidadLibre").value} caja(s)`;
+      } else {
+        etiquetaTam = prod.tamanos[$("mpTamano").value].nombre;
+        const packs = Number($("mpPacks").value) || 1;
+        cantidadTxt = `${$("mpCantidadSel").value} un${packs > 1 ? ` × ${packs} packs` : ""}`;
+      }
+
+      carrito.push({
+        id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+        nombre: prod.nombre, tamano: etiquetaTam, cantidadTxt, precio,
+      });
+      guardarCarrito();
+      actualizarBadges();
+      cerrarModalProducto();
+      toast("Agregado al carrito.");
+    });
+
+    /* =========================================================
+       CARRITO
+    ========================================================== */
+    function totalCarrito() { return carrito.reduce((a, it) => a + it.precio, 0); }
+
+    function actualizarBadges() {
+      const n = carrito.length, total = totalCarrito();
+      const badge = $("cartBadge");
+      badge.textContent = n; badge.classList.toggle("hidden", n === 0);
+      $("barraCantidad").textContent = n;
+      $("barraTotal").textContent = formatCLP(total);
+      $("barraCarrito").classList.toggle("hidden", n === 0 || !panelCerrado());
+    }
+    function panelCerrado() { return $("panelCarrito").classList.contains("hidden"); }
+
+    function renderCarrito() {
+      const cont = $("listaCarrito");
+      cont.innerHTML = "";
+      $("carritoVacio").classList.toggle("hidden", carrito.length > 0);
+      $("footerCarrito").classList.toggle("hidden", carrito.length === 0);
+
+      carrito.forEach((it) => {
+        const row = document.createElement("div");
+        row.className = "flex items-start gap-3 bg-crema/50 rounded-xl p-3";
+        row.innerHTML = `
+          <div class="min-w-0 flex-1">
+            <p class="font-medium text-sm text-pizarra truncate">${escapeHtml(it.nombre)}</p>
+            <p class="text-xs text-cafeClaro">${escapeHtml(it.tamano ? it.tamano + " · " : "")}${escapeHtml(it.cantidadTxt)}</p>
+            <p class="text-sm font-semibold text-cafe mt-1">${formatCLP(it.precio)}</p>
+          </div>
+          <button data-quitar="${it.id}" class="h-8 w-8 rounded-lg text-rose-500 hover:bg-rose-50 flex items-center justify-center shrink-0"><i class="fa-solid fa-trash"></i></button>`;
+        cont.appendChild(row);
+      });
+      cont.querySelectorAll("[data-quitar]").forEach((b) =>
+        b.addEventListener("click", () => {
+          carrito = carrito.filter((it) => it.id !== b.dataset.quitar);
+          guardarCarrito(); renderCarrito(); actualizarBadges();
+        })
+      );
+      $("cartTotal").textContent = formatCLP(totalCarrito());
+      $("ckTotal").textContent = formatCLP(totalCarrito());
+    }
+
+    function abrirCarrito() {
+      renderCarrito();
+      mostrarVistaCarrito();
+      $("panelCarrito").classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+      $("barraCarrito").classList.add("hidden");
+    }
+    function cerrarCarrito() {
+      $("panelCarrito").classList.add("hidden");
+      document.body.style.overflow = "";
+      actualizarBadges();
+    }
+    $("btnAbrirCarrito").addEventListener("click", abrirCarrito);
+    $("barraCarrito").addEventListener("click", abrirCarrito);
+    $("cartCerrar").addEventListener("click", cerrarCarrito);
+    $("panelCarritoFondo").addEventListener("click", cerrarCarrito);
+
+    function mostrarVistaCarrito() {
+      $("vistaCarrito").classList.remove("hidden");
+      $("footerCarrito").classList.toggle("hidden", carrito.length === 0);
+      $("vistaCheckout").classList.add("hidden");
+    }
+    function mostrarVistaCheckout() {
+      if (carrito.length === 0) { toast("Tu carrito está vacío.", "warn"); return; }
+      $("vistaCarrito").classList.add("hidden");
+      $("footerCarrito").classList.add("hidden");
+      $("vistaCheckout").classList.remove("hidden");
+    }
+    $("btnIrCheckout").addEventListener("click", mostrarVistaCheckout);
+    $("btnVolverCarrito").addEventListener("click", mostrarVistaCarrito);
+
+    /* =========================================================
+       CHECKOUT · ENVIAR POR WHATSAPP
+    ========================================================== */
+    function hoyISO() {
+      const d = new Date(); const off = d.getTimezoneOffset();
+      return new Date(d.getTime() - off * 60000).toISOString().slice(0, 10);
+    }
+    $("ckFecha").min = hoyISO();
+
+    // Muestra el campo adicional según la forma de entrega elegida
+    const ETIQUETA_ENTREGA = { retiro: "Retiro en domicilio", encuentro: "Punto de encuentro", envio: "Envío (costo adicional)" };
+    document.querySelectorAll('input[name="ckEntrega"]').forEach((r) =>
+      r.addEventListener("change", () => {
+        $("ckCampoEncuentro").classList.toggle("hidden", r.value !== "encuentro" || !r.checked);
+        $("ckCampoEnvio").classList.toggle("hidden", r.value !== "envio" || !r.checked);
+      })
+    );
+    function entregaSeleccionada() {
+      return document.querySelector('input[name="ckEntrega"]:checked').value;
+    }
+
+    $("btnEnviarWa").addEventListener("click", () => {
+      const nombre = $("ckNombre").value.trim();
+      const telefono = $("ckTelefono").value.trim();
+      const fecha = $("ckFecha").value;
+      const notas = $("ckNotas").value.trim();
+      const entrega = entregaSeleccionada();
+      const lugarEncuentro = $("ckLugarEncuentro").value.trim();
+      const direccionEnvio = $("ckDireccionEnvio").value.trim();
+
+      if (!nombre || !telefono || !fecha) { toast("Completa nombre, teléfono y fecha.", "warn"); return; }
+      if (entrega === "encuentro" && !lugarEncuentro) { toast("Indica el punto de encuentro.", "warn"); return; }
+      if (entrega === "envio" && !direccionEnvio) { toast("Indica la dirección de envío.", "warn"); return; }
+      if (carrito.length === 0) { toast("Tu carrito está vacío.", "warn"); return; }
+
+      let entregaTxt = ETIQUETA_ENTREGA[entrega];
+      if (entrega === "encuentro") entregaTxt += ` — ${lugarEncuentro}`;
+      if (entrega === "envio") entregaTxt += ` — ${direccionEnvio}`;
+
+      const fechaTxt = (() => { const [a,m,d] = fecha.split("-"); return `${d}-${m}-${a}`; })();
+      const lineas = carrito.map((it, i) =>
+        `${i + 1}) ${it.nombre}${it.tamano ? " · " + it.tamano : ""} · ${it.cantidadTxt} — ${formatCLP(it.precio)}`
+      ).join("\n");
+
+      const msg =
+`¡Hola Zeste! 🧁 Quiero hacer un pedido:
+
+${lineas}
+
+Total: ${formatCLP(totalCarrito())}
+
+Datos:
+Nombre: ${nombre}
+Teléfono: ${telefono}
+Fecha de entrega deseada: ${fechaTxt}
+Forma de entrega: ${entregaTxt}${notas ? `\nNotas: ${notas}` : ""}`;
+
+      const url = `https://wa.me/${WHATSAPP_NEGOCIO}?text=${encodeURIComponent(msg)}`;
+      window.open(url, "_blank");
+
+      // Limpia el carrito y el formulario tras enviar (el pedido ya quedó registrado vía WhatsApp)
+      carrito = [];
+      guardarCarrito();
+      renderCarrito();
+      actualizarBadges();
+      $("ckNombre").value = ""; $("ckTelefono").value = ""; $("ckFecha").value = "";
+      $("ckNotas").value = ""; $("ckLugarEncuentro").value = ""; $("ckDireccionEnvio").value = "";
+      document.querySelector('input[name="ckEntrega"][value="retiro"]').checked = true;
+      $("ckCampoEncuentro").classList.add("hidden"); $("ckCampoEnvio").classList.add("hidden");
+      mostrarVistaCarrito();
+      toast("Pedido enviado por WhatsApp.");
+    });
+
+    /* =========================================================
+       ARRANQUE
+    ========================================================== */
+    cargarCarrito();
+    renderNav();
+    renderCatalogo();
+    actualizarBadges();
+    if (carrito.length > 0) $("barraCarrito").classList.remove("hidden");
+  })();
+  </script>
+</body>
+</html>
